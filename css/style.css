@@ -44,3 +44,8 @@
   padding-block-start: 5px;
   width: 200px;
 }
+
+div.error{
+  font-size: large;
+  color: red;
+}
