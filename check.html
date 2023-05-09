@@ -1,12 +1,14 @@
 <!DOCTYPE html>
 <html lang="ja">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css" integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
+        integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.js"></script>
     <title>再講習受講期日確認くん</title>
     <!-- <style>
@@ -24,30 +26,35 @@
     }
     </style> -->
 </head>
+
 <body>
     <div class="container">
         <header class="header">
-            選任日、受講日を入力して確認ボタンを押してください<br/>
+            選任日、受講日を入力して確認ボタンを押してください<br />
             ※タイムラインを表示するにはネット接続が必要です
         </header>
-    <div class="left">
-        <form class="pure-form"><fieldset>
-        <div><label for="senninDate">選任日</label></div>
-        <input type="date" id="senninDate" class="pure-input-rounded" ><!-- value="2023-04-01" --> 
-        <div><label for="boukaJukouDate">防火管理講習最終受講日</label></div>
-        <input type="date" id="boukaJukouDate" class="pure-input-rounded"><!-- value="2019-03-06"  -->
-        <div><input type="checkbox" id="isCheckBousai">防災もチェックする</div>
-        <div><label for="bousaiJukouDate">防災管理講習受講日</label></div>
-        <input type="date" id="bousaiJukouDate" class="pure-input-rounded"> <!-- value="2021-09-08" -->
-        <p><input type="button" value="確認"  id="checkButton" class="button pure-button pure-button-primary"></p>
-        </fieldset></form>
+        <div class="left">
+            <form class="pure-form">
+                <fieldset>
+                    <div><label for="senninDate">選任日</label></div>
+                    <input type="date" id="senninDate" class="pure-input-rounded"><!-- value="2023-04-01" -->
+                    <div><label for="boukaJukouDate">防火管理講習最終受講日</label></div>
+                    <input type="date" id="boukaJukouDate" class="pure-input-rounded"><!-- value="2019-03-06"  -->
+                    <div><input type="checkbox" id="isCheckBousai">防災もチェックする</div>
+                    <div><label for="bousaiJukouDate">防災管理講習受講日</label></div>
+                    <input type="date" id="bousaiJukouDate" class="pure-input-rounded"> <!-- value="2021-09-08" -->
+                    <p><input type="button" value="確認" id="checkButton" class="button pure-button pure-button-primary">
+                    </p>
+                </fieldset>
+            </form>
+        </div>
+        <div class="right">
+            <div id="msg"></div>
+        </div>
     </div>
-    <div class="right">
-        <div id="msg"></div>
-    </div>
-    </div>
-<div id="visualization"></div>
+    <div id="visualization"></div>
 
-<script src="js/script.js"></script>
+    <script src="js/script.js"></script>
 </body>
+
 </html>
