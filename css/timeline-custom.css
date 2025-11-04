@@ -1,0 +1,54 @@
+/* タイムラインのポイント（点）のスタイル */
+.vis-item.vis-point {
+    border-width: 3px;
+}
+
+/* 防火関連のポイント */
+.vis-item.bouka-point {
+    border-color: #E57373 !important;
+}
+
+.vis-item.bouka-point .vis-item-overflow {
+    overflow: visible;
+}
+
+/* 防災関連のポイント */
+.vis-item.bousai-point {
+    border-color: #42A5F5 !important;
+}
+
+.vis-item.bousai-point .vis-item-overflow {
+    overflow: visible;
+}
+
+/* 選任関連のポイント */
+.vis-item.sennin-point {
+    border-color: #66BB6A !important;
+}
+
+.vis-item.sennin-point .vis-item-overflow {
+    overflow: visible;
+}
+
+/* 受講期日のポイント */
+.vis-item.limit-point {
+    border-color: #D32F2F !important;
+    border-width: 4px;
+}
+
+.vis-item.limit-point .vis-item-overflow {
+    overflow: visible;
+}
+
+/* レンジ（期間）のボーダー色 */
+.vis-item.vis-range.bouka-range {
+    border-color: #E57373 !important;
+}
+
+.vis-item.vis-range.bousai-range {
+    border-color: #42A5F5 !important;
+}
+
+.vis-item.vis-range.sennin-range {
+    border-color: #66BB6A !important;
+}
