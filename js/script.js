@@ -1,6 +1,6 @@
 import { formatDate, japaneseDate, nextApril1st, dateAfterYear, previousDay } from './dateUtils.js';
 
-function butotnClick() {
+function buttonClick() {
     document.getElementById('visualization').innerHTML = '';
 
     const boukaJukouDate = document.getElementById('boukaJukouDate').valueAsDate;
@@ -144,4 +144,4 @@ function butotnClick() {
 const msg = document.getElementById('msg');
 
 const checkButton = document.getElementById('checkButton');
-checkButton.addEventListener('click', butotnClick);
+checkButton.addEventListener('click', buttonClick);
