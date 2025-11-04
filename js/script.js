@@ -1,5 +1,6 @@
+import { formatDate, japaneseDate, nextApril1st, dateAfterYear, previousDay } from './dateUtils.js';
 
-function butotnClick() {
+function buttonClick() {
     document.getElementById('visualization').innerHTML = '';
 
     const boukaJukouDate = document.getElementById('boukaJukouDate').valueAsDate;
@@ -16,6 +17,7 @@ function butotnClick() {
         let isBouka5years = false;
         let tokureiMsg;
         let limitDate;
+        let msg2 = "";
 
         if (senninBefore4y > boukaJukouDate) {
             isBouka5years = false;
@@ -137,45 +139,9 @@ function butotnClick() {
     }
 };
 
-function japaneseDate(date) {
-    const japaneseDate = new Intl.DateTimeFormat('ja-JP-u-ca-japanese',
-        { era: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(date);
-    return japaneseDate;
-}
-function formatDate(date, format) {
-    //date型をフォーマットする関数
-    format = format.replace(/yyyy/g, date.getFullYear());
-    format = format.replace(/MM/g, ('0' + (date.getMonth() + 1)).slice(-2));
-    format = format.replace(/dd/g, ('0' + date.getDate()).slice(-2));
-    format = format.replace(/HH/g, ('0' + date.getHours()).slice(-2));
-    format = format.replace(/mm/g, ('0' + date.getMinutes()).slice(-2));
-    format = format.replace(/ss/g, ('0' + date.getSeconds()).slice(-2));
-    format = format.replace(/SSS/g, ('00' + date.getMilliseconds()).slice(-3));
-    return format;
-};
-
-function nextApril1st(date) {
-    const dt = new Date(date.getTime());
-    if (dt.getMonth() >= 3) {
-        dt.setFullYear(dt.getFullYear() + 1);
-    }
-    dt.setMonth(3);
-    dt.setDate(1);
-    return dt;
-}
-function dateAfterYear(date, year) {
-    const dt = new Date(date.getTime());
-    dt.setFullYear(dt.getFullYear() + year);
-    return dt;
-}
-function previousDay(date) {
-    const dt = new Date(date.getTime());
-    dt.setDate(dt.getDate() - 1);
-    return dt;
-}
-
+// ユーティリティ関数はdateUtils.jsからインポート
 
 const msg = document.getElementById('msg');
 
 const checkButton = document.getElementById('checkButton');
-checkButton.addEventListener('click', butotnClick);
+checkButton.addEventListener('click', buttonClick);
