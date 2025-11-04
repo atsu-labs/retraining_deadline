@@ -5,6 +5,23 @@ const YEARS_BEFORE_SENNIN = -4;
 const YEARS_FOR_LIMIT = 5;
 const ONE_YEAR = 1;
 
+// タイムライン色定義
+const COLORS = {
+    BOUKA_DATE: '#FFB3BA',        // 防火受講日 - ライトレッド
+    BOUKA_NEXT_APRIL: '#FF8A8A',  // 防火受講日の次の4/1 - ミディアムレッド
+    BOUKA_TERM: '#FFCDD2',        // 防火期間 - 淡いレッド
+    BOUKA_BORDER: '#E57373',      // 防火ボーダー
+    BOUSAI_DATE: '#B3D9FF',       // 防災受講日 - ライトブルー
+    BOUSAI_NEXT_APRIL: '#8AC6FF', // 防災受講日の次の4/1 - ミディアムブルー
+    BOUSAI_TERM: '#BBDEFB',       // 防災期間 - 淡いブルー
+    BOUSAI_BORDER: '#42A5F5',     // 防災ボーダー
+    SENNIN_DATE: '#C8E6C9',       // 選任日 - ライトグリーン
+    SENNIN_TERM: '#A5D6A7',       // 選任期間 - ミディアムグリーン
+    SENNIN_BORDER: '#66BB6A',     // 選任ボーダー
+    LIMIT_DATE: '#FF5252',        // 受講期日 - ダークレッド（警告色）
+    LIMIT_BORDER: '#D32F2F'       // 受講期日ボーダー
+};
+
 /**
  * 入力値を検証
  * @param {Date|null} boukaJukouDate - 防火受講日
@@ -114,7 +131,8 @@ function createTimelineData(boukaJukouDate, senninDate, bousaiJukouDate, limitDa
             content: '防火受講日',
             title: formatDate(boukaJukouDate, 'yyyy-MM-dd'),
             start: formatDate(boukaJukouDate, 'yyyy-MM-dd'),
-            style: "background-color:pink;"
+            className: 'bouka-point',
+            style: `background-color:${COLORS.BOUKA_DATE}; border-color:${COLORS.BOUKA_BORDER};`
         },
         {
             id: 2,
@@ -122,34 +140,43 @@ function createTimelineData(boukaJukouDate, senninDate, bousaiJukouDate, limitDa
             content: '選任日',
             title: formatDate(senninDate, 'yyyy-MM-dd'),
             start: formatDate(senninDate, 'yyyy-MM-dd'),
-            style: "background-color:pink;"
+            className: 'sennin-point',
+            style: `background-color:${COLORS.SENNIN_DATE}; border-color:${COLORS.SENNIN_BORDER};`
         },
         {
             id: 3,
             group: 'date2',
             content: '防火受講日の次の4/1',
-            start: formatDate(boukaNextApril, 'yyyy-MM-dd')
+            start: formatDate(boukaNextApril, 'yyyy-MM-dd'),
+            className: 'bouka-point',
+            style: `background-color:${COLORS.BOUKA_NEXT_APRIL}; border-color:${COLORS.BOUKA_BORDER};`
         },
         {
             id: 4,
             group: 'term',
             content: '選任日から過去４年間',
             start: formatDate(senninBefore4y, 'yyyy/MM/dd'),
-            end: formatDate(senninDate, 'yyyy-MM-dd')
+            end: formatDate(senninDate, 'yyyy-MM-dd'),
+            className: 'sennin-range',
+            style: `background-color:${COLORS.SENNIN_TERM}; border-color:${COLORS.SENNIN_BORDER};`
         },
         {
             id: 5,
             group: 'term',
             content: '防火受講日の次の4/1から5年間',
             start: formatDate(boukaNextApril, 'yyyy-MM-dd'),
-            end: formatDate(boukaLimit, 'yyyy/MM/dd')
+            end: formatDate(boukaLimit, 'yyyy/MM/dd'),
+            className: 'bouka-range',
+            style: `background-color:${COLORS.BOUKA_TERM}; border-color:${COLORS.BOUKA_BORDER};`
         },
         {
             id: 6,
             group: 'term',
             content: '選任日から1年間',
             start: formatDate(senninDate, 'yyyy-MM-dd'),
-            end: formatDate(senninLimit, 'yyyy-MM-dd')
+            end: formatDate(senninLimit, 'yyyy-MM-dd'),
+            className: 'sennin-range',
+            style: `background-color:${COLORS.SENNIN_TERM}; border-color:${COLORS.SENNIN_BORDER};`
         }
     ];
     
@@ -164,20 +191,25 @@ function createTimelineData(boukaJukouDate, senninDate, bousaiJukouDate, limitDa
                 content: '防災受講日',
                 title: formatDate(bousaiJukouDate, 'yyyy-MM-dd'),
                 start: formatDate(bousaiJukouDate, 'yyyy-MM-dd'),
-                style: "background-color:pink;"
+                className: 'bousai-point',
+                style: `background-color:${COLORS.BOUSAI_DATE}; border-color:${COLORS.BOUSAI_BORDER};`
             },
             {
                 id: 8,
                 group: 'date2',
                 content: '防災受講日の次の4/1',
-                start: formatDate(bousaiNextApril, 'yyyy-MM-dd')
+                start: formatDate(bousaiNextApril, 'yyyy-MM-dd'),
+                className: 'bousai-point',
+                style: `background-color:${COLORS.BOUSAI_NEXT_APRIL}; border-color:${COLORS.BOUSAI_BORDER};`
             },
             {
                 id: 9,
                 group: 'term',
                 content: '防災受講日の次の4/1から5年間',
                 start: formatDate(bousaiNextApril, 'yyyy-MM-dd'),
-                end: formatDate(bousaiLimit, 'yyyy/MM/dd')
+                end: formatDate(bousaiLimit, 'yyyy/MM/dd'),
+                className: 'bousai-range',
+                style: `background-color:${COLORS.BOUSAI_TERM}; border-color:${COLORS.BOUSAI_BORDER};`
             }
         );
     }
@@ -188,7 +220,8 @@ function createTimelineData(boukaJukouDate, senninDate, bousaiJukouDate, limitDa
         content: '受講期日',
         title: formatDate(limitDate, 'yyyy-MM-dd'),
         start: formatDate(limitDate, 'yyyy-MM-dd'),
-        style: "background-color:red;"
+        className: 'limit-point',
+        style: `background-color:${COLORS.LIMIT_DATE}; border-color:${COLORS.LIMIT_BORDER};`
     });
     
     return data;
