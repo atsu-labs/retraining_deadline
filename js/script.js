@@ -17,7 +17,7 @@ function butotnClick() {
         let isBouka5years = false;
         let tokureiMsg;
         let limitDate;
-        let msg2;
+        let msg2 = "";
 
         if (senninBefore4y > boukaJukouDate) {
             isBouka5years = false;
