@@ -1,0 +1,24 @@
+{
+  "name": "retraining_deadline",
+  "version": "1.0.0",
+  "description": "防火・防災管理講習の再講習期限確認アプリケーション",
+  "scripts": {
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+  },
+  "keywords": [
+    "fire-prevention",
+    "disaster-prevention",
+    "training-deadline"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@babel/core": "^7.23.0",
+    "@babel/preset-env": "^7.23.0",
+    "babel-jest": "^29.7.0",
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
