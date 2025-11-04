@@ -69,3 +69,80 @@ export function japaneseDate(date) {
         { era: 'long', year: 'numeric', month: 'long', day: 'numeric' }).format(date);
     return japaneseDate;
 }
+
+/**
+ * 元号の定義
+ */
+const ERA_RANGES = [
+    { era: '令和', startDate: new Date(2019, 4, 1), offset: 2018 },
+    { era: '平成', startDate: new Date(1989, 0, 8), offset: 1988 },
+    { era: '昭和', startDate: new Date(1926, 11, 25), offset: 1925 },
+    { era: '大正', startDate: new Date(1912, 6, 30), offset: 1911 },
+    { era: '明治', startDate: new Date(1868, 0, 1), offset: 1867 }
+];
+
+/**
+ * 西暦から和暦の情報を取得
+ * @param {Date} date - 西暦の日付
+ * @returns {{era: string, year: number, month: number, day: number}} 和暦情報
+ */
+export function toJapaneseCalendar(date) {
+    for (const range of ERA_RANGES) {
+        if (date >= range.startDate) {
+            const year = date.getFullYear() - range.offset;
+            return {
+                era: range.era,
+                year: year,
+                month: date.getMonth() + 1,
+                day: date.getDate()
+            };
+        }
+    }
+    // デフォルト（明治以前）
+    return {
+        era: '明治',
+        year: date.getFullYear() - 1867,
+        month: date.getMonth() + 1,
+        day: date.getDate()
+    };
+}
+
+/**
+ * 和暦から西暦のDateオブジェクトを生成
+ * @param {string} era - 元号（令和、平成、昭和、大正、明治）
+ * @param {number} year - 和暦の年
+ * @param {number} month - 月（1-12）
+ * @param {number} day - 日
+ * @returns {Date|null} 西暦のDateオブジェクト、変換失敗時はnull
+ */
+export function fromJapaneseCalendar(era, year, month, day) {
+    const range = ERA_RANGES.find(r => r.era === era);
+    if (!range) {
+        return null;
+    }
+    
+    const westernYear = year + range.offset;
+    const date = new Date(westernYear, month - 1, day);
+    
+    // 日付の妥当性チェック
+    if (date.getFullYear() !== westernYear || 
+        date.getMonth() !== month - 1 || 
+        date.getDate() !== day) {
+        return null;
+    }
+    
+    // 元号の開始日以降かチェック
+    if (date < range.startDate) {
+        return null;
+    }
+    
+    return date;
+}
+
+/**
+ * 利用可能な元号のリストを取得
+ * @returns {string[]} 元号の配列
+ */
+export function getAvailableEras() {
+    return ERA_RANGES.map(r => r.era);
+}

@@ -14,7 +14,10 @@ import {
     dateAfterYear,
     previousDay,
     formatDate,
-    japaneseDate
+    japaneseDate,
+    toJapaneseCalendar,
+    fromJapaneseCalendar,
+    getAvailableEras
 } from './dateUtils';
 
 describe('nextApril1st', () => {
@@ -273,5 +276,136 @@ describe('統合テスト: 実際のユースケース', () => {
         expect(result.getFullYear()).toBe(2024);
         expect(result.getMonth()).toBe(2); // 3月
         expect(result.getDate()).toBe(31);
+    });
+});
+
+describe('和暦変換機能', () => {
+    describe('toJapaneseCalendar', () => {
+        test('令和の日付を和暦に変換', () => {
+            const date = new Date(2023, 5, 15); // 2023年6月15日
+            const result = toJapaneseCalendar(date);
+            expect(result.era).toBe('令和');
+            expect(result.year).toBe(5);
+            expect(result.month).toBe(6);
+            expect(result.day).toBe(15);
+        });
+
+        test('令和元年の日付', () => {
+            const date = new Date(2019, 4, 1); // 2019年5月1日
+            const result = toJapaneseCalendar(date);
+            expect(result.era).toBe('令和');
+            expect(result.year).toBe(1);
+            expect(result.month).toBe(5);
+            expect(result.day).toBe(1);
+        });
+
+        test('平成の日付を和暦に変換', () => {
+            const date = new Date(2019, 3, 30); // 2019年4月30日
+            const result = toJapaneseCalendar(date);
+            expect(result.era).toBe('平成');
+            expect(result.year).toBe(31);
+            expect(result.month).toBe(4);
+            expect(result.day).toBe(30);
+        });
+
+        test('昭和の日付を和暦に変換', () => {
+            const date = new Date(1989, 0, 7); // 1989年1月7日
+            const result = toJapaneseCalendar(date);
+            expect(result.era).toBe('昭和');
+            expect(result.year).toBe(64);
+            expect(result.month).toBe(1);
+            expect(result.day).toBe(7);
+        });
+    });
+
+    describe('fromJapaneseCalendar', () => {
+        test('令和5年6月15日を西暦に変換', () => {
+            const date = fromJapaneseCalendar('令和', 5, 6, 15);
+            expect(date).not.toBeNull();
+            expect(date.getFullYear()).toBe(2023);
+            expect(date.getMonth()).toBe(5); // 6月 (0-indexed)
+            expect(date.getDate()).toBe(15);
+        });
+
+        test('令和元年5月1日を西暦に変換', () => {
+            const date = fromJapaneseCalendar('令和', 1, 5, 1);
+            expect(date).not.toBeNull();
+            expect(date.getFullYear()).toBe(2019);
+            expect(date.getMonth()).toBe(4); // 5月
+            expect(date.getDate()).toBe(1);
+        });
+
+        test('平成31年4月30日を西暦に変換', () => {
+            const date = fromJapaneseCalendar('平成', 31, 4, 30);
+            expect(date).not.toBeNull();
+            expect(date.getFullYear()).toBe(2019);
+            expect(date.getMonth()).toBe(3); // 4月
+            expect(date.getDate()).toBe(30);
+        });
+
+        test('昭和64年1月7日を西暦に変換', () => {
+            const date = fromJapaneseCalendar('昭和', 64, 1, 7);
+            expect(date).not.toBeNull();
+            expect(date.getFullYear()).toBe(1989);
+            expect(date.getMonth()).toBe(0); // 1月
+            expect(date.getDate()).toBe(7);
+        });
+
+        test('不正な元号の場合nullを返す', () => {
+            const date = fromJapaneseCalendar('存在しない元号', 1, 1, 1);
+            expect(date).toBeNull();
+        });
+
+        test('不正な日付の場合nullを返す', () => {
+            const date = fromJapaneseCalendar('令和', 5, 2, 30); // 2月30日
+            expect(date).toBeNull();
+        });
+
+        test('元号開始日より前の日付の場合nullを返す', () => {
+            // 令和元年4月1日（令和開始は5月1日）
+            const date = fromJapaneseCalendar('令和', 1, 4, 1);
+            expect(date).toBeNull();
+        });
+    });
+
+    describe('和暦⇔西暦の相互変換', () => {
+        test('西暦→和暦→西暦の変換で元の日付に戻る', () => {
+            const originalDate = new Date(2023, 5, 15);
+            const japanese = toJapaneseCalendar(originalDate);
+            const convertedDate = fromJapaneseCalendar(
+                japanese.era,
+                japanese.year,
+                japanese.month,
+                japanese.day
+            );
+            expect(convertedDate.getTime()).toBe(originalDate.getTime());
+        });
+
+        test('和暦→西暦→和暦の変換で元の和暦に戻る', () => {
+            const originalEra = '令和';
+            const originalYear = 5;
+            const originalMonth = 6;
+            const originalDay = 15;
+            
+            const westernDate = fromJapaneseCalendar(originalEra, originalYear, originalMonth, originalDay);
+            const japanese = toJapaneseCalendar(westernDate);
+            
+            expect(japanese.era).toBe(originalEra);
+            expect(japanese.year).toBe(originalYear);
+            expect(japanese.month).toBe(originalMonth);
+            expect(japanese.day).toBe(originalDay);
+        });
+    });
+
+    describe('getAvailableEras', () => {
+        test('利用可能な元号のリストを取得', () => {
+            const eras = getAvailableEras();
+            expect(eras).toContain('令和');
+            expect(eras).toContain('平成');
+            expect(eras).toContain('昭和');
+            expect(eras).toContain('大正');
+            expect(eras).toContain('明治');
+            expect(eras.length).toBeGreaterThanOrEqual(5);
+        });
     });
 });

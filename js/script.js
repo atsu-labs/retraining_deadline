@@ -1,4 +1,5 @@
 import { formatDate, japaneseDate, nextApril1st, dateAfterYear, previousDay } from './dateUtils.js';
+import { initializeJapaneseCalendarSync } from './japaneseCalendarSync.js';
 
 // 定数定義
 const YEARS_BEFORE_SENNIN = -4;
@@ -332,3 +333,6 @@ const msg = document.getElementById('msg');
 
 const checkButton = document.getElementById('checkButton');
 checkButton.addEventListener('click', buttonClick);
+
+// 和暦・西暦フォームの同期を初期化
+initializeJapaneseCalendarSync();

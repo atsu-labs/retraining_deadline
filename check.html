@@ -1,62 +1,90 @@
 <!DOCTYPE html>
-<html lang="ja">
-
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="./css/timeline-custom.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/purecss@3.0.0/build/pure-min.css"
-        integrity="sha384-X38yfunGUhNzHpBaEBsWLO+A0HDYOQi8ufWDkZ0k9e0eXz/tH3II7uKZ9msv++Ls" crossorigin="anonymous">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.js"></script>
+<html lang="ja" data-theme="light">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>再講習受講期日確認くん</title>
-    <!-- <style>
+    <!-- Pico.css -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
+    <!-- vis.js Timeline -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.css">
+    <!-- カスタムCSS -->
+    <link rel="stylesheet" href="./css/style.css" />
+    <link rel="stylesheet" href="./css/timeline-custom.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis-timeline-graph2d.min.js"></script>
+  </head>
 
-    input[type="date"] {
-        position: relative;
-        padding: 0 10px;
-        width: 200px;
-        height: 24px;
-        border: 1;
-        background: lightgray;
-        box-sizing: border-box;
-        font-size: 20px;
-        color: #000000;
-    }
-    </style> -->
-</head>
-
-<body>
-    <div class="container">
-        <header class="header">
-            選任日、受講日を入力して確認ボタンを押してください<br />
-            ※タイムラインを表示するにはネット接続が必要です
+  <body>
+    <main class="container">
+        <header>
+            <hgroup>
+                <h2>再講習受講期日確認</h2>
+                <p>選任日、受講日を入力して確認ボタンを押してください</p>
+            </hgroup>
         </header>
-        <div class="left">
-            <form class="pure-form">
-                <fieldset>
-                    <div><label for="senninDate">選任日</label></div>
-                    <input type="date" id="senninDate" class="pure-input-rounded"><!-- value="2023-04-01" -->
-                    <div><label for="boukaJukouDate">防火管理講習最終受講日</label></div>
-                    <input type="date" id="boukaJukouDate" class="pure-input-rounded"><!-- value="2019-03-06"  -->
+
+        <div class="grid">
+            <section>
+                <form>
+                    <label>
+                        選任日
+                        <div class="date-input-row">
+                            <input type="date" id="senninDate">
+                            <div class="japanese-date-input">
+                                <select id="senninEra"></select>
+                                <input type="number" id="senninYear" min="1" max="99" placeholder="年">年
+                                <input type="number" id="senninMonth" min="1" max="12" placeholder="月">月
+                                <input type="number" id="senninDay" min="1" max="31" placeholder="日">日
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <label>
+                        防火管理講習最終受講日
+                        <div class="date-input-row">
+                            <input type="date" id="boukaJukouDate">
+                            <div class="japanese-date-input">
+                                <select id="boukaEra"></select>
+                                <input type="number" id="boukaYear" min="1" max="99" placeholder="年">年
+                                <input type="number" id="boukaMonth" min="1" max="12" placeholder="月">月
+                                <input type="number" id="boukaDay" min="1" max="31" placeholder="日">日
+                            </div>
+                        </div>
+                    </label>
+                    
                     <hr>
-                    <div><input type="checkbox" id="isCheckBousai">防災もチェックする</div>
-                    <div><label for="bousaiJukouDate">防災管理講習受講日</label></div>
-                    <input type="date" id="bousaiJukouDate" class="pure-input-rounded"> <!-- value="2021-09-08" -->
-                    <p><input type="button" value="確認" id="checkButton" class="button pure-button pure-button-primary">
-                    </p>
-                </fieldset>
-            </form>
+                    
+                    <label>
+                        <input type="checkbox" id="isCheckBousai" role="switch">
+                        防災もチェックする
+                    </label>
+                    
+                    <label>
+                        防災管理講習受講日
+                        <div class="date-input-row">
+                            <input type="date" id="bousaiJukouDate">
+                            <div class="japanese-date-input">
+                                <select id="bousaiEra"></select>
+                                <input type="number" id="bousaiYear" min="1" max="99" placeholder="年">年
+                                <input type="number" id="bousaiMonth" min="1" max="12" placeholder="月">月
+                                <input type="number" id="bousaiDay" min="1" max="31" placeholder="日">日
+                            </div>
+                        </div>
+                    </label>
+                    
+                    <button type="button" id="checkButton">確認</button>
+                </form>
+            </section>
+
+            <section>
+                <div id="msg"></div>
+            </section>
         </div>
-        <div class="right">
-            <div id="msg"></div>
-        </div>
-    </div>
+    </main>
+
     <div id="visualization"></div>
 
     <script type="module" src="js/script.js"></script>
-</body>
+  </body>
 
 </html>
