@@ -235,7 +235,7 @@ function renderTimeline(data) {
     
     const items = new vis.DataSet(data);
     const options = { showCurrentTime: false };
-    const timeline = new vis.Timeline(container, items, groups, options);
+    new vis.Timeline(container, items, groups, options);
 }
 
 /**
