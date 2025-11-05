@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>和暦変換テスト</title>
+</head>
+<body>
+    <h1>和暦変換テスト</h1>
+    <div>
+        <h2>西暦→和暦</h2>
+        <input type="date" id="testWestern">
+        <button id="testConvert">変換</button>
+        <div id="result"></div>
+    </div>
+
+    <script type="module">
+        import { getJapaneseEra, japaneseToDate, getAvailableEras } from './js/dateUtils.js';
+
+        document.getElementById('testConvert').addEventListener('click', () => {
+            const date = document.getElementById('testWestern').valueAsDate;
+            console.log('入力日付:', date);
+            if (date) {
+                const jpDate = getJapaneseEra(date);
+                console.log('変換結果:', jpDate);
+                document.getElementById('result').textContent = JSON.stringify(jpDate, null, 2);
+            }
+        });
+
+        // 元号リストテスト
+        console.log('利用可能な元号:', getAvailableEras());
+
+        // 和暦→西暦テスト
+        const testDate = japaneseToDate('令和', 5, 11, 5);
+        console.log('令和5年11月5日 = ', testDate);
+    </script>
+</body>
+</html>

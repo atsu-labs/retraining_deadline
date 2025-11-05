@@ -38,13 +38,61 @@
             <form class="pure-form">
                 <fieldset>
                     <div><label for="senninDate">選任日</label></div>
-                    <input type="date" id="senninDate" class="pure-input-rounded"><!-- value="2023-04-01" -->
+                    <div class="date-input-group">
+                        <input type="date" id="senninDate" class="pure-input date-western">
+                        <div class="date-japanese">
+                            <select id="senninEra" class="pure-input era-select">
+                                <option value="">元号</option>
+                            </select>
+                            <input type="number" id="senninYear" class="pure-input year-input" placeholder="年" min="1" max="99">
+                            <select id="senninMonth" class="pure-input month-select">
+                                <option value="">月</option>
+                            </select>
+                            <select id="senninDay" class="pure-input day-select">
+                                <option value="">日</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="date-error" id="senninError"></div>
+                    
                     <div><label for="boukaJukouDate">防火管理講習最終受講日</label></div>
-                    <input type="date" id="boukaJukouDate" class="pure-input-rounded"><!-- value="2019-03-06"  -->
+                    <div class="date-input-group">
+                        <input type="date" id="boukaJukouDate" class="pure-input date-western">
+                        <div class="date-japanese">
+                            <select id="boukaEra" class="pure-input era-select">
+                                <option value="">元号</option>
+                            </select>
+                            <input type="number" id="boukaYear" class="pure-input year-input" placeholder="年" min="1" max="99">
+                            <select id="boukaMonth" class="pure-input month-select">
+                                <option value="">月</option>
+                            </select>
+                            <select id="boukaDay" class="pure-input day-select">
+                                <option value="">日</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="date-error" id="boukaError"></div>
+                    
                     <hr>
                     <div><input type="checkbox" id="isCheckBousai">防災もチェックする</div>
                     <div><label for="bousaiJukouDate">防災管理講習受講日</label></div>
-                    <input type="date" id="bousaiJukouDate" class="pure-input-rounded"> <!-- value="2021-09-08" -->
+                    <div class="date-input-group">
+                        <input type="date" id="bousaiJukouDate" class="pure-input date-western">
+                        <div class="date-japanese">
+                            <select id="bousaiEra" class="pure-input era-select">
+                                <option value="">元号</option>
+                            </select>
+                            <input type="number" id="bousaiYear" class="pure-input year-input" placeholder="年" min="1" max="99">
+                            <select id="bousaiMonth" class="pure-input month-select">
+                                <option value="">月</option>
+                            </select>
+                            <select id="bousaiDay" class="pure-input day-select">
+                                <option value="">日</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="date-error" id="bousaiError"></div>
+                    
                     <p><input type="button" value="確認" id="checkButton" class="button pure-button pure-button-primary">
                     </p>
                 </fieldset>

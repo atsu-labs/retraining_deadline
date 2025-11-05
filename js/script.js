@@ -1,4 +1,4 @@
-import { formatDate, japaneseDate, nextApril1st, dateAfterYear, previousDay } from './dateUtils.js';
+import { formatDate, japaneseDate, nextApril1st, dateAfterYear, previousDay, getJapaneseEra, japaneseToDate, getAvailableEras } from './dateUtils.js';
 
 // 定数定義
 const YEARS_BEFORE_SENNIN = -4;
@@ -332,3 +332,190 @@ const msg = document.getElementById('msg');
 
 const checkButton = document.getElementById('checkButton');
 checkButton.addEventListener('click', buttonClick);
+
+// ========== 和暦入力機能の初期化 ==========
+
+/**
+ * セレクトボックスを初期化（月と日）
+ */
+function initializeDateSelects() {
+    const monthSelects = document.querySelectorAll('.month-select');
+    const daySelects = document.querySelectorAll('.day-select');
+    
+    // 月のオプションを生成（1-12）
+    monthSelects.forEach(select => {
+        for (let i = 1; i <= 12; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `${i}月`;
+            select.appendChild(option);
+        }
+    });
+    
+    // 日のオプションを生成（1-31）
+    daySelects.forEach(select => {
+        for (let i = 1; i <= 31; i++) {
+            const option = document.createElement('option');
+            option.value = i;
+            option.textContent = `${i}日`;
+            select.appendChild(option);
+        }
+    });
+}
+
+/**
+ * 元号セレクトボックスを初期化
+ */
+function initializeEraSelects() {
+    const eras = getAvailableEras();
+    const eraSelects = document.querySelectorAll('.era-select');
+    
+    eraSelects.forEach(select => {
+        eras.forEach(era => {
+            const option = document.createElement('option');
+            option.value = era.name;
+            option.textContent = era.name;
+            select.appendChild(option);
+        });
+    });
+}
+
+/**
+ * 西暦入力から和暦入力を更新
+ * @param {string} westernId - 西暦入力のID
+ * @param {string} prefix - 和暦入力のプレフィックス（sennin, bouka, bousai）
+ */
+function updateJapaneseFromWestern(westernId, prefix) {
+    const westernInput = document.getElementById(westernId);
+    const dateString = westernInput.value; // 'YYYY-MM-DD' 形式の文字列
+    
+    const eraSelect = document.getElementById(`${prefix}Era`);
+    const yearInput = document.getElementById(`${prefix}Year`);
+    const monthSelect = document.getElementById(`${prefix}Month`);
+    const daySelect = document.getElementById(`${prefix}Day`);
+    const errorDiv = document.getElementById(`${prefix}Error`);
+    
+    // エラーメッセージをクリア
+    if (errorDiv) {
+        errorDiv.textContent = '';
+    }
+    
+    if (dateString) {
+        // 文字列から年月日をパース（タイムゾーンの影響を受けない）
+        const [year, month, day] = dateString.split('-').map(Number);
+        const date = new Date(year, month - 1, day);
+        
+        const jpDate = getJapaneseEra(date);
+        if (jpDate) {
+            eraSelect.value = jpDate.era;
+            yearInput.value = jpDate.year;
+            monthSelect.value = jpDate.month;
+            daySelect.value = jpDate.day;
+        }
+    } else {
+        // 空欄の場合は和暦もクリア
+        eraSelect.value = '';
+        yearInput.value = '';
+        monthSelect.value = '';
+        daySelect.value = '';
+    }
+}
+
+/**
+ * 和暦入力から西暦入力を更新
+ * @param {string} westernId - 西暦入力のID
+ * @param {string} prefix - 和暦入力のプレフィックス（sennin, bouka, bousai）
+ */
+function updateWesternFromJapanese(westernId, prefix) {
+    const eraSelect = document.getElementById(`${prefix}Era`);
+    const yearInput = document.getElementById(`${prefix}Year`);
+    const monthSelect = document.getElementById(`${prefix}Month`);
+    const daySelect = document.getElementById(`${prefix}Day`);
+    const errorDiv = document.getElementById(`${prefix}Error`);
+    
+    const era = eraSelect.value;
+    const year = parseInt(yearInput.value);
+    const month = parseInt(monthSelect.value);
+    const day = parseInt(daySelect.value);
+    
+    // エラーメッセージをクリア
+    if (errorDiv) {
+        errorDiv.textContent = '';
+    }
+    
+    if (era && year && month && day) {
+        const date = japaneseToDate(era, year, month, day);
+        if (date) {
+            const westernInput = document.getElementById(westernId);
+            // YYYY-MM-DD形式の文字列で設定（タイムゾーンの影響を受けない）
+            const dateString = formatDate(date, 'yyyy-MM-dd');
+            westernInput.value = dateString;
+        } else {
+            // 変換できない日付の場合はエラーを表示
+            if (errorDiv) {
+                errorDiv.textContent = `⚠ ${era}${year}年${month}月${day}日は存在しない日付です`;
+            }
+            // 西暦入力もクリア
+            const westernInput = document.getElementById(westernId);
+            westernInput.value = '';
+        }
+    }
+}
+
+/**
+ * イベントリスナーを設定
+ * @param {string} westernId - 西暦入力のID
+ * @param {string} prefix - 和暦入力のプレフィックス
+ */
+function setupDateSync(westernId, prefix) {
+    // 西暦→和暦の同期
+    const westernInput = document.getElementById(westernId);
+    if (!westernInput) {
+        return;
+    }
+    
+    westernInput.addEventListener('change', () => {
+        updateJapaneseFromWestern(westernId, prefix);
+    });
+    
+    // 和暦→西暦の同期
+    const eraSelect = document.getElementById(`${prefix}Era`);
+    const yearInput = document.getElementById(`${prefix}Year`);
+    const monthSelect = document.getElementById(`${prefix}Month`);
+    const daySelect = document.getElementById(`${prefix}Day`);
+    
+    if (!eraSelect || !yearInput || !monthSelect || !daySelect) {
+        return;
+    }
+    
+    [eraSelect, yearInput, monthSelect, daySelect].forEach(element => {
+        element.addEventListener('change', () => {
+            updateWesternFromJapanese(westernId, prefix);
+        });
+        // input イベントも追加（yearInputの即座な反応のため）
+        if (element === yearInput) {
+            element.addEventListener('input', () => {
+                updateWesternFromJapanese(westernId, prefix);
+            });
+        }
+    });
+}
+
+// 初期化処理
+function initializeApp() {
+    initializeDateSelects();
+    initializeEraSelects();
+    
+    // 各日付フィールドの同期設定
+    setupDateSync('senninDate', 'sennin');
+    setupDateSync('boukaJukouDate', 'bouka');
+    setupDateSync('bousaiJukouDate', 'bousai');
+}
+
+// DOMの読み込みが完了してから初期化
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // すでにDOMが読み込まれている場合は即座に実行
+    initializeApp();
+}
