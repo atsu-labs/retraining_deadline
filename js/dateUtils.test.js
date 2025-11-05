@@ -474,4 +474,20 @@ describe('統合テスト: 実際のユースケース', () => {
         expect(result.getMonth()).toBe(2); // 3月
         expect(result.getDate()).toBe(31);
     });
+
+    test('防災管理講習は4月1日起算なし', () => {
+        // 防災管理は講習日から直接5年
+        const bousaiDate = new Date(2020, 5, 15); // 2020年6月15日
+        const limit = previousDay(dateAfterYear(bousaiDate, 5));
+        expect(formatDate(limit, 'yyyy/MM/dd')).toBe('2025/06/14');
+        
+        // 防火管理と比較（4月1日起算あり）
+        const boukaDate = new Date(2020, 5, 15); // 2020年6月15日
+        const boukaNextApril = nextApril1st(boukaDate);
+        const boukaLimit = previousDay(dateAfterYear(boukaNextApril, 5));
+        expect(formatDate(boukaLimit, 'yyyy/MM/dd')).toBe('2026/03/31');
+        
+        // 防災の方が早く期限が来る
+        expect(limit < boukaLimit).toBe(true);
+    });
 });
