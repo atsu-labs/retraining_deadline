@@ -475,11 +475,12 @@ describe('統合テスト: 実際のユースケース', () => {
         expect(result.getDate()).toBe(31);
     });
 
-    test('防災管理講習は4月1日起算なし', () => {
-        // 防災管理は講習日から直接5年
+    test('防災管理講習も4月1日起算（規則改正後）', () => {
+        // 防災管理も防火と同様に講習日の次の4月1日から5年
         const bousaiDate = new Date(2020, 5, 15); // 2020年6月15日
-        const limit = previousDay(dateAfterYear(bousaiDate, 5));
-        expect(formatDate(limit, 'yyyy/MM/dd')).toBe('2025/06/14');
+        const bousaiNextApril = nextApril1st(bousaiDate);
+        const bousaiLimit = previousDay(dateAfterYear(bousaiNextApril, 5));
+        expect(formatDate(bousaiLimit, 'yyyy/MM/dd')).toBe('2026/03/31');
         
         // 防火管理と比較（4月1日起算あり）
         const boukaDate = new Date(2020, 5, 15); // 2020年6月15日
@@ -487,7 +488,7 @@ describe('統合テスト: 実際のユースケース', () => {
         const boukaLimit = previousDay(dateAfterYear(boukaNextApril, 5));
         expect(formatDate(boukaLimit, 'yyyy/MM/dd')).toBe('2026/03/31');
         
-        // 防災の方が早く期限が来る
-        expect(limit < boukaLimit).toBe(true);
+        // 同じ受講日なら防災と防火の期限は同じ
+        expect(formatDate(bousaiLimit, 'yyyy/MM/dd')).toBe(formatDate(boukaLimit, 'yyyy/MM/dd'));
     });
 });
