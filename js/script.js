@@ -67,6 +67,7 @@ function calculateBoukaLimit(boukaJukouDate, senninDate, bousaiJukouDate = null)
     }
     
     // 附則2号の特例判定
+    // 防災管理も4月1日起算となったため、附則2号の適用条件を確認
     if (bousaiJukouDate !== null && bousaiJukouDate > boukaJukouDate) {
         // 防災管理講習期限を計算
         const senninBefore4yForBousai = dateAfterYear(senninDate, YEARS_BEFORE_SENNIN);
@@ -76,13 +77,13 @@ function calculateBoukaLimit(boukaJukouDate, senninDate, bousaiJukouDate = null)
             // 防災：選任日から1年以内
             bousaiLimit = previousDay(dateAfterYear(senninDate, ONE_YEAR));
         } else {
-            // 防災：講習日から5年以内（4月1日起算なし）
-            bousaiLimit = previousDay(dateAfterYear(bousaiJukouDate, YEARS_FOR_LIMIT));
+            // 防災：防災受講日の次の4月1日から5年
+            bousaiLimit = previousDay(dateAfterYear(nextApril1st(bousaiJukouDate), YEARS_FOR_LIMIT));
         }
         
         // 附則2号適用条件：防火期限が防災期限より早い場合
         if (limitDate < bousaiLimit) {
-            // 附則2号：防災管理新規講習の次の4月1日から5年
+            // 附則2号：防災管理新規講習の次の4月1日から5年（通常の防災計算と同じ）
             const bousaiNextApril = nextApril1st(bousaiJukouDate);
             const fusoku2Limit = previousDay(dateAfterYear(bousaiNextApril, YEARS_FOR_LIMIT));
             
@@ -121,9 +122,9 @@ function calculateBousaiLimit(bousaiJukouDate, senninDate) {
         message = `選任から1年以内に受講が必要(${formatDate(limitDate, 'yyyy/MM/dd')})`;
     } else {
         // 選任日から過去4年以内に防災受講がある場合
-        // 防災は講習日から直接5年（4月1日起算なし）
-        limitDate = previousDay(dateAfterYear(bousaiJukouDate, YEARS_FOR_LIMIT));
-        message = `防災受講日から５年以内に受講が必要(${formatDate(limitDate, 'yyyy/MM/dd')})`;
+        // 防災も防火と同様に4月1日起算で5年
+        limitDate = previousDay(dateAfterYear(nextApril1st(bousaiJukouDate), YEARS_FOR_LIMIT));
+        message = `防災受講日の次の４月１日から５年以内に受講が必要(${formatDate(limitDate, 'yyyy/MM/dd')})`;
     }
     
     return {
