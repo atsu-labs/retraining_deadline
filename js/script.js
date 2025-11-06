@@ -68,7 +68,8 @@ function calculateBoukaLimit(boukaJukouDate, senninDate, bousaiJukouDate = null)
     
     // 附則2号の特例判定
     // 防災管理も4月1日起算となったため、附則2号の適用条件を確認
-    if (bousaiJukouDate !== null && bousaiJukouDate > boukaJukouDate) {
+    // 附則2号は防火管理が5年ルール（選任日が防火受講日から4年以内）で計算されている場合のみ適用
+    if (bousaiJukouDate !== null && bousaiJukouDate > boukaJukouDate && isBouka5years) {
         // 防災管理講習期限を計算
         const senninBefore4yForBousai = dateAfterYear(senninDate, YEARS_BEFORE_SENNIN);
         let bousaiLimit;
@@ -290,9 +291,15 @@ function renderTimeline(data) {
         { id: 'term', content: '期間' }
     ];
     
-    const items = new vis.DataSet(data);
-    const options = { showCurrentTime: false };
-    new vis.Timeline(container, items, groups, options);
+    // Check if vis library is available
+    if (typeof vis !== 'undefined') {
+        const items = new vis.DataSet(data);
+        const options = { showCurrentTime: false };
+        new vis.Timeline(container, items, groups, options);
+    } else {
+        // vis library is not available, skip timeline rendering
+        container.innerHTML = '<p style="color: #666;">タイムラインの表示にはネット接続が必要です</p>';
+    }
 }
 
 /**
