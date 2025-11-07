@@ -143,6 +143,7 @@ function calculateBousaiLimit(bousaiJukouDate, senninDate) {
 function createComparisonView(boukaLimit, bousaiLimit) {
     const boukaStatus = getDaysRemaining(boukaLimit);
     const bousaiStatus = getDaysRemaining(bousaiLimit);
+    const isSameDate = boukaLimit.getTime() === bousaiLimit.getTime();
     const earlierIsBoukaFlag = boukaLimit < bousaiLimit;
     
     const boukaDaysText = boukaStatus.daysRemaining < 0 
@@ -157,23 +158,23 @@ function createComparisonView(boukaLimit, bousaiLimit) {
         <div class="comparison-container">
             <h3>期限の比較</h3>
             <div class="comparison-grid">
-                <div class="comparison-item ${boukaStatus.statusClass} ${earlierIsBoukaFlag ? 'earlier' : ''}">
+                <div class="comparison-item ${boukaStatus.statusClass} ${!isSameDate && earlierIsBoukaFlag ? 'earlier' : ''}">
                     <div class="comparison-title">防火管理</div>
                     <div class="comparison-date">${formatDate(boukaLimit, 'yyyy/MM/dd')}</div>
                     <div class="comparison-japanese">${japaneseDate(boukaLimit)}</div>
                     <div class="comparison-days">${boukaDaysText}</div>
-                    ${earlierIsBoukaFlag ? '<div class="earlier-badge">⚠️ より早い期限</div>' : ''}
+                    ${!isSameDate && earlierIsBoukaFlag ? '<div class="earlier-badge">⚠️ より早い期限</div>' : ''}
                 </div>
-                <div class="comparison-item ${bousaiStatus.statusClass} ${!earlierIsBoukaFlag ? 'earlier' : ''}">
+                <div class="comparison-item ${bousaiStatus.statusClass} ${!isSameDate && !earlierIsBoukaFlag ? 'earlier' : ''}">
                     <div class="comparison-title">防災管理</div>
                     <div class="comparison-date">${formatDate(bousaiLimit, 'yyyy/MM/dd')}</div>
                     <div class="comparison-japanese">${japaneseDate(bousaiLimit)}</div>
                     <div class="comparison-days">${bousaiDaysText}</div>
-                    ${!earlierIsBoukaFlag ? '<div class="earlier-badge">⚠️ より早い期限</div>' : ''}
+                    ${!isSameDate && !earlierIsBoukaFlag ? '<div class="earlier-badge">⚠️ より早い期限</div>' : ''}
                 </div>
             </div>
             <div class="comparison-note">
-                ${boukaLimit.getTime() === bousaiLimit.getTime()
+                ${isSameDate
                     ? '防火管理と防災管理の期限は同日です'
                     : earlierIsBoukaFlag 
                         ? '防火管理の期限が先に到来します' 
