@@ -301,10 +301,11 @@ function createTimelineData(boukaJukouDate, senninDate, bousaiJukouDate, limitDa
 /**
  * 期限までの残り日数を計算してステータスを返す
  * @param {Date} limitDate - 期限日
+ * @param {Date} [baseDate] - 基準日（省略時は今日）
  * @returns {{daysRemaining: number, statusClass: string, statusText: string}}
  */
-function getDaysRemaining(limitDate) {
-    const today = new Date();
+function getDaysRemaining(limitDate, baseDate = null) {
+    const today = baseDate || new Date();
     today.setHours(0, 0, 0, 0);
     const limit = new Date(limitDate);
     limit.setHours(0, 0, 0, 0);
@@ -373,7 +374,7 @@ function createResultMessage(boukaJukouDate, senninDate, limitDate, limitMessage
             </div>
             ` : ''}
             
-            <details class="calculation-details" ${fusoku2Applied ? '' : 'open'}>
+            <details class="calculation-details"${fusoku2Applied ? '' : ' open'}>
                 <summary>計算詳細を表示</summary>
                 <div class="detail-item">
                     <span class="detail-label">選任日</span>
@@ -494,11 +495,14 @@ function buttonClick() {
             isCheckBousai
         );
 
-        // 結果メッセージ生成
+        // 結果メッセージ生成時に表示する期限を決定
+        // 附則2号が適用されている場合は防火期限を表示、それ以外は早い方の期限を表示
+        const displayLimitDate = boukaResult.fusoku2Applied ? boukaResult.limitDate : limitDate;
+        
         let resultMessage = createResultMessage(
             boukaJukouDate,
             senninDate,
-            boukaResult.fusoku2Applied ? boukaResult.limitDate : limitDate,
+            displayLimitDate,
             limitMessage,
             bousaiMsg,
             boukaResult.fusoku2Applied
