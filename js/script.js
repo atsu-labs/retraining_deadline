@@ -135,6 +135,52 @@ function calculateBousaiLimit(bousaiJukouDate, senninDate) {
 }
 
 /**
+ * 防火と防災の期限を比較表示するHTMLを生成
+ * @param {Date} boukaLimit - 防火管理期限
+ * @param {Date} bousaiLimit - 防災管理期限
+ * @returns {string} HTML文字列
+ */
+function createComparisonView(boukaLimit, bousaiLimit) {
+    const boukaStatus = getDaysRemaining(boukaLimit);
+    const bousaiStatus = getDaysRemaining(bousaiLimit);
+    const earlierIsBoukaFlag = boukaLimit < bousaiLimit;
+    
+    const boukaDaysText = boukaStatus.daysRemaining < 0 
+        ? `${Math.abs(boukaStatus.daysRemaining)}日超過` 
+        : `残り${boukaStatus.daysRemaining}日`;
+    
+    const bousaiDaysText = bousaiStatus.daysRemaining < 0 
+        ? `${Math.abs(bousaiStatus.daysRemaining)}日超過` 
+        : `残り${bousaiStatus.daysRemaining}日`;
+    
+    return `
+        <div class="comparison-container">
+            <h3>期限の比較</h3>
+            <div class="comparison-grid">
+                <div class="comparison-item ${boukaStatus.statusClass} ${earlierIsBoukaFlag ? 'earlier' : ''}">
+                    <div class="comparison-title">防火管理</div>
+                    <div class="comparison-date">${formatDate(boukaLimit, 'yyyy/MM/dd')}</div>
+                    <div class="comparison-japanese">${japaneseDate(boukaLimit)}</div>
+                    <div class="comparison-days">${boukaDaysText}</div>
+                    ${earlierIsBoukaFlag ? '<div class="earlier-badge">⚠️ より早い期限</div>' : ''}
+                </div>
+                <div class="comparison-item ${bousaiStatus.statusClass} ${!earlierIsBoukaFlag ? 'earlier' : ''}">
+                    <div class="comparison-title">防災管理</div>
+                    <div class="comparison-date">${formatDate(bousaiLimit, 'yyyy/MM/dd')}</div>
+                    <div class="comparison-japanese">${japaneseDate(bousaiLimit)}</div>
+                    <div class="comparison-days">${bousaiDaysText}</div>
+                    ${!earlierIsBoukaFlag ? '<div class="earlier-badge">⚠️ より早い期限</div>' : ''}
+                </div>
+            </div>
+            <div class="comparison-note">
+                ${earlierIsBoukaFlag 
+                    ? '防火管理の期限が先に到来します' 
+                    : '防災管理の期限が先に到来します'}
+            </div>
+        </div>`;
+}
+
+/**
  * タイムライン用のデータ項目を生成
  * @param {Date} boukaJukouDate - 防火受講日
  * @param {Date} senninDate - 選任日
@@ -253,30 +299,111 @@ function createTimelineData(boukaJukouDate, senninDate, bousaiJukouDate, limitDa
 }
 
 /**
+ * 期限までの残り日数を計算してステータスを返す
+ * @param {Date} limitDate - 期限日
+ * @returns {{daysRemaining: number, statusClass: string, statusText: string}}
+ */
+function getDaysRemaining(limitDate) {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const limit = new Date(limitDate);
+    limit.setHours(0, 0, 0, 0);
+    
+    const diffTime = limit - today;
+    const daysRemaining = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    
+    let statusClass, statusText;
+    if (daysRemaining < 0) {
+        statusClass = 'status-expired';
+        statusText = '期限超過';
+    } else if (daysRemaining <= 30) {
+        statusClass = 'status-urgent';
+        statusText = '緊急';
+    } else if (daysRemaining <= 90) {
+        statusClass = 'status-warning';
+        statusText = '警告';
+    } else {
+        statusClass = 'status-ok';
+        statusText = '正常';
+    }
+    
+    return { daysRemaining, statusClass, statusText };
+}
+
+/**
  * 結果メッセージHTMLを生成
  * @param {Date} boukaJukouDate - 防火受講日
  * @param {Date} senninDate - 選任日
  * @param {Date} limitDate - 受講期限
  * @param {string} limitMessage - 期限メッセージ
  * @param {string} tokureiMsg - 特例メッセージ
+ * @param {boolean} fusoku2Applied - 附則2号適用フラグ
  * @returns {string} HTML文字列
  */
-function createResultMessage(boukaJukouDate, senninDate, limitDate, limitMessage, tokureiMsg) {
+function createResultMessage(boukaJukouDate, senninDate, limitDate, limitMessage, tokureiMsg, fusoku2Applied = false) {
     const senninBefore4y = dateAfterYear(senninDate, YEARS_BEFORE_SENNIN);
+    const { daysRemaining, statusClass, statusText } = getDaysRemaining(limitDate);
+    
+    // 残り日数の表示テキスト
+    const daysText = daysRemaining < 0 
+        ? `${Math.abs(daysRemaining)}日超過` 
+        : `残り${daysRemaining}日`;
     
     return `
-        <span class="inline">選任日：</span>
-        <span class="inline">${formatDate(senninDate, 'yyyy/MM/dd')}</span><br/>
-        <span class="inline">選任日の４年前：</span>
-        <span class="inline">${formatDate(senninBefore4y, 'yyyy/MM/dd')}</span><br/>
-        <span class="inline">防火受講日：</span>
-        <span class="inline">${formatDate(boukaJukouDate, 'yyyy/MM/dd')}</span><br/>
-        <span class="inline">防火受講日の次の4/1：</span>
-        <span class="inline">${formatDate(nextApril1st(boukaJukouDate), 'yyyy/MM/dd')}</span><br/>
-        ${limitMessage}<br/>
-        <br/>
-        <p>${tokureiMsg}</p>
-        <b>期限は${formatDate(limitDate, 'yyyy/MM/dd')}【${japaneseDate(limitDate)}】</b>`;
+        <div class="result-container ${statusClass}">
+            <div class="status-summary">
+                <div class="deadline-main">
+                    <div class="deadline-label">受講期限</div>
+                    <div class="deadline-date">${formatDate(limitDate, 'yyyy/MM/dd')}</div>
+                    <div class="deadline-japanese">【${japaneseDate(limitDate)}】</div>
+                </div>
+                <div class="days-remaining">
+                    <div class="days-value">${daysText}</div>
+                    <div class="status-badge">${statusText}</div>
+                </div>
+            </div>
+            
+            ${fusoku2Applied ? `
+            <div class="special-rule-notice">
+                <div class="notice-icon">ℹ️</div>
+                <div class="notice-content">
+                    <strong>附則2号特例が適用されています</strong>
+                    <div>${limitMessage}</div>
+                </div>
+            </div>
+            ` : ''}
+            
+            <details class="calculation-details" ${fusoku2Applied ? '' : 'open'}>
+                <summary>計算詳細を表示</summary>
+                <div class="detail-item">
+                    <span class="detail-label">選任日</span>
+                    <span class="detail-value">${formatDate(senninDate, 'yyyy/MM/dd')}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">選任日の４年前</span>
+                    <span class="detail-value">${formatDate(senninBefore4y, 'yyyy/MM/dd')}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">防火受講日</span>
+                    <span class="detail-value">${formatDate(boukaJukouDate, 'yyyy/MM/dd')}</span>
+                </div>
+                <div class="detail-item">
+                    <span class="detail-label">防火受講日の次の4/1</span>
+                    <span class="detail-value">${formatDate(nextApril1st(boukaJukouDate), 'yyyy/MM/dd')}</span>
+                </div>
+                ${!fusoku2Applied ? `
+                <div class="detail-reasoning">
+                    ${limitMessage}
+                </div>
+                ` : ''}
+            </details>
+            
+            ${tokureiMsg ? `
+            <div class="bousai-info">
+                ${tokureiMsg}
+            </div>
+            ` : ''}
+        </div>`;
 }
 
 /**
@@ -327,22 +454,28 @@ function buttonClick() {
         let limitDate = boukaResult.limitDate;
         let limitMessage = boukaResult.message;
         let bousaiMsg = '';
-        let fusoku2Message = '';
         
-        // 附則2号適用時のメッセージを保存
-        if (boukaResult.fusoku2Applied) {
-            fusoku2Message = '<br/><span style="color: #d32f2f; font-weight: bold;">※ 附則2号特例適用</span>';
-        }
-
         // 防災管理期限計算
+        let bousaiResult = null;
         if (isCheckBousai) {
-            const bousaiResult = calculateBousaiLimit(bousaiJukouDate, senninDate);
+            bousaiResult = calculateBousaiLimit(bousaiJukouDate, senninDate);
             
+            // 防災管理情報を詳細に含める
             bousaiMsg = `
-                <span class="inline">防災受講日：</span>
-                <span class="inline">${formatDate(bousaiJukouDate, 'yyyy/MM/dd')}</span><br/>
-                ${bousaiResult.message}<br/>
-                <b>防災期限は${formatDate(bousaiResult.limitDate, 'yyyy/MM/dd')}【${japaneseDate(bousaiResult.limitDate)}】</b>`;
+                <details class="calculation-details" open>
+                    <summary>防災管理の計算詳細</summary>
+                    <div class="detail-item">
+                        <span class="detail-label">防災受講日</span>
+                        <span class="detail-value">${formatDate(bousaiJukouDate, 'yyyy/MM/dd')}</span>
+                    </div>
+                    <div class="detail-reasoning">
+                        ${bousaiResult.message}
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">防災期限</span>
+                        <span class="detail-value"><strong>${formatDate(bousaiResult.limitDate, 'yyyy/MM/dd')}【${japaneseDate(bousaiResult.limitDate)}】</strong></span>
+                    </div>
+                </details>`;
             
             // 最終的な受講期限は防火と防災の早い方
             // ただし、附則2号が適用されている場合は防火期限メッセージを優先
@@ -350,11 +483,6 @@ function buttonClick() {
                 limitDate = bousaiResult.limitDate;
                 limitMessage = `防災管理の期限が先に到来します`;
             }
-        }
-        
-        // 附則2号のメッセージを最後に追加
-        if (fusoku2Message) {
-            limitMessage += fusoku2Message;
         }
 
         // タイムラインデータ作成
@@ -367,13 +495,19 @@ function buttonClick() {
         );
 
         // 結果メッセージ生成
-        const resultMessage = createResultMessage(
+        let resultMessage = createResultMessage(
             boukaJukouDate,
             senninDate,
-            limitDate,
+            boukaResult.fusoku2Applied ? boukaResult.limitDate : limitDate,
             limitMessage,
-            bousaiMsg
+            bousaiMsg,
+            boukaResult.fusoku2Applied
         );
+        
+        // 防災管理がある場合、比較ビューを追加
+        if (isCheckBousai && bousaiResult) {
+            resultMessage += createComparisonView(boukaResult.limitDate, bousaiResult.limitDate);
+        }
 
         // UI更新
         msg.innerHTML = resultMessage;
