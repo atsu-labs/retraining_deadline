@@ -1,61 +1,199 @@
+/* コンテナ全体 */
 .container {
-  background-color: gray;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-template-rows: 60px 1fr;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
 }
 
+/* ヘッダー */
 .header {
-  padding: 10px;
-  background-color: rgb(250, 250, 203);
-  grid-column-start: 1;
-  grid-column-end: 3;
-  grid-row-start: 1;
-  grid-row-end: auto;
+  background-color: #1976d2;
+  color: white;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
 }
 
-.left {
-  padding: 10px;
-  background-color: rgb(202, 250, 234);
-  grid-column-start: 1;
-  grid-column-end: auto;
-  grid-row-start: 2;
-  grid-row-end: auto;
+.header h2 {
+  margin: 0;
+  font-size: 1.8em;
 }
 
-.right {
-  padding: 10px;
-  background-color: rgb(248, 223, 227);
-  grid-column-start: 2;
-  grid-column-end: auto;
-  grid-row-start: 2;
-  grid-row-end: auto;
+/* フォームセクション */
+.form-section {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+  margin-bottom: 20px;
 }
 
-.button {
-  width: 200px;
-  height: 40px;
+.form-group {
+  padding: 15px;
 }
 
+.form-group label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 0.95em;
+}
+
+/* トグルラベル */
+.toggle-label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: #333;
+  font-size: 0.95em;
+}
+
+/* トグルグループ（右寄せ） */
+.toggle-group {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding-right: 10px;
+}
+
+.toggle-group .toggle-label {
+  text-align: right;
+  width: 100%;
+}
+
+/* トグルラッパー */
+.toggle-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  min-height: 40px;
+}
+
+/* トグルスイッチ（Pure CSS風カスタムスタイル） */
+.pure-material-switch {
+  display: inline-block;
+  position: relative;
+  padding-left: 60px;
+  cursor: pointer;
+  user-select: none;
+  line-height: 24px;
+  font-size: 0.85em;
+  color: #333;
+  margin: 0;
+}
+
+.pure-material-switch input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+  height: 0;
+  width: 0;
+}
+
+.pure-material-switch span:before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 50px;
+  height: 24px;
+  background-color: #ccc;
+  border-radius: 12px;
+  transition: background-color 0.3s;
+}
+
+.pure-material-switch span:after {
+  content: '';
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.3s;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.pure-material-switch input:checked ~ span:before {
+  background-color: #1976d2;
+}
+
+.pure-material-switch input:checked ~ span:after {
+  transform: translateX(26px);
+}
+
+.pure-material-switch input:focus ~ span:before {
+  box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.2);
+}
+
+/* ボタンセクション */
+.button-section {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.button-section button {
+  font-size: 1.1em;
+  padding: 12px 40px;
+  border-radius: 6px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+}
+
+.button-section button:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  transform: translateY(-2px);
+}
+
+/* Visualizationセクション */
+#visualization {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  margin-bottom: 20px;
+  min-height: 200px;
+}
+
+/* メッセージセクション */
+.msg-section {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+}
+
+#msg {
+  line-height: 1.8;
+}
+
+/* 旧スタイル（互換性のため残す） */
 .inline {
   display: inline-block;
-  background-color: lightblue;
-  padding-inline-start: 5px;
-  padding-block-start: 5px;
-  width: 200px;
+  background-color: #e3f2fd;
+  padding: 5px 10px;
+  border-radius: 4px;
+  margin: 2px 0;
 }
 
-div.error{
+div.error {
   font-size: large;
-  color: red;
+  color: #d32f2f;
+  background-color: #ffebee;
+  padding: 15px;
+  border-radius: 4px;
+  border-left: 4px solid #d32f2f;
 }
 
 /* 和暦入力エラー表示 */
 .date-error {
   color: #d32f2f;
-  font-size: 0.9em;
-  margin-top: -10px;
-  margin-bottom: 10px;
+  font-size: 0.85em;
+  margin-top: 5px;
+  margin-bottom: 5px;
   min-height: 1.2em;
   padding-left: 5px;
 }
@@ -63,14 +201,13 @@ div.error{
 /* 和暦入力フォームのスタイル */
 .date-input-group {
   display: flex;
-  gap: 10px;
-  align-items: center;
-  margin-bottom: 15px;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .date-western {
-  flex: 0 0 auto;
-  min-width: 150px;
+  width: 100%;
+  max-width: 200px;
 }
 
 .date-japanese {
@@ -83,8 +220,10 @@ div.error{
 .pure-form .era-select,
 .pure-form .month-select,
 .pure-form .day-select {
-  padding: 2px 4px !important;
+  padding: 4px 8px !important;
   line-height: 1.5 !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .era-select {
@@ -92,10 +231,12 @@ div.error{
 }
 
 .pure-form .year-input {
-  width: 60px;
-  padding: 2px 4px !important;
-  height: 2.25em !important;
+  width: 70px;
+  padding: 4px 8px !important;
+  height: auto !important;
   line-height: 1.5 !important;
+  border: 1px solid #ccc;
+  border-radius: 4px;
 }
 
 .month-select,
@@ -105,13 +246,39 @@ div.error{
 
 /* レスポンシブ対応 */
 @media (max-width: 768px) {
-  .date-input-group {
-    flex-direction: column;
-    align-items: flex-start;
+  .container {
+    padding: 10px;
+  }
+  
+  .header h2 {
+    font-size: 1.4em;
+  }
+  
+  .form-section {
+    padding: 15px;
+  }
+  
+  .form-group {
+    padding: 10px 0;
+  }
+  
+  .date-western {
+    max-width: 100%;
   }
   
   .date-japanese {
     width: 100%;
+  }
+}
+
+/* カスタムxlブレークポイント（1280px以上で横並び） */
+@media (min-width: 1280px) {
+  .pure-u-xl-5-16 {
+    width: 31.25%; /* 5/16 */
+  }
+  
+  .pure-u-xl-1-8 {
+    width: 6.25%; /* 1/16 縮小 */
   }
 }
 
