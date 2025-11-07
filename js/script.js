@@ -173,9 +173,11 @@ function createComparisonView(boukaLimit, bousaiLimit) {
                 </div>
             </div>
             <div class="comparison-note">
-                ${earlierIsBoukaFlag 
-                    ? '防火管理の期限が先に到来します' 
-                    : '防災管理の期限が先に到来します'}
+                ${boukaLimit.getTime() === bousaiLimit.getTime()
+                    ? '防火管理と防災管理の期限は同日です'
+                    : earlierIsBoukaFlag 
+                        ? '防火管理の期限が先に到来します' 
+                        : '防災管理の期限が先に到来します'}
             </div>
         </div>`;
 }
@@ -468,6 +470,10 @@ function buttonClick() {
                     <div class="detail-item">
                         <span class="detail-label">防災受講日</span>
                         <span class="detail-value">${formatDate(bousaiJukouDate, 'yyyy/MM/dd')}</span>
+                    </div>
+                    <div class="detail-item">
+                        <span class="detail-label">防災受講日の次の4/1</span>
+                        <span class="detail-value">${formatDate(nextApril1st(bousaiJukouDate), 'yyyy/MM/dd')}</span>
                     </div>
                     <div class="detail-reasoning">
                         ${bousaiResult.message}
